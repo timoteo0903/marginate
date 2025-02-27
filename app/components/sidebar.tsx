@@ -5,15 +5,22 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import {
+  BarChart,
+  Building2,
+  Calendar,
   ChevronDown,
+  Contact2,
+  FileText,
   LayoutDashboard,
   LogOut,
-  Settings,
-  User,
-  TrendingUp,
-  TrendingDown,
-  BarChart,
   Package,
+  Settings,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  User,
+  Users,
+  Wallet,
   Menu,
 } from "lucide-react"
 
@@ -39,26 +46,96 @@ export function Sidebar() {
       icon: LayoutDashboard,
     },
     {
-      label: "Ingresos",
-      href: "/ingresos",
-      icon: TrendingUp,
-    },
-    {
-      label: "Egresos",
-      href: "/egresos",
-      icon: TrendingDown,
+      label: "CRM",
+      items: [
+        {
+          label: "Clientes",
+          href: "/clientes",
+          icon: Building2,
+        },
+        {
+          label: "Contactos",
+          href: "/contactos",
+          icon: Contact2,
+        },
+        {
+          label: "Oportunidades",
+          href: "/oportunidades",
+          icon: Target,
+        },
+      ],
     },
     {
       label: "Finanzas",
-      href: "/finanzas",
-      icon: BarChart,
+      items: [
+        {
+          label: "Ingresos",
+          href: "/ingresos",
+          icon: TrendingUp,
+        },
+        {
+          label: "Egresos",
+          href: "/egresos",
+          icon: TrendingDown,
+        },
+        {
+          label: "Finanzas",
+          href: "/finanzas",
+          icon: Wallet,
+        },
+      ],
     },
     {
-      label: "Stock",
-      href: "/stock",
-      icon: Package,
+      label: "Inventario",
+      items: [
+        {
+          label: "Stock",
+          href: "/stock",
+          icon: Package,
+        },
+      ],
+    },
+    {
+      label: "Gestión",
+      items: [
+        {
+          label: "Proyectos",
+          href: "/proyectos",
+          icon: FileText,
+        },
+        {
+          label: "Empleados",
+          href: "/empleados",
+          icon: Users,
+        },
+        {
+          label: "Calendario",
+          href: "/calendario",
+          icon: Calendar,
+        },
+      ],
     },
   ]
+
+  const SidebarLink = ({
+    href,
+    icon: Icon,
+    label,
+    indent = false,
+  }: { href: string; icon: any; label: string; indent?: boolean }) => (
+    <Link
+      href={href}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+        pathname === href ? "bg-muted text-primary" : "text-muted-foreground",
+        indent && "pl-6",
+      )}
+      onClick={() => setIsOpen(false)}
+    >
+      <Icon className="h-4 w-4" />
+      {label}
+    </Link>
+  )
 
   const SidebarContent = () => (
     <>
@@ -74,19 +151,21 @@ export function Sidebar() {
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium">
-          {routes.map((route) => (
-            <Link
-              key={route.href}
-              href={route.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                pathname === route.href ? "bg-muted text-primary" : "text-muted-foreground",
+          {routes.map((route, i) => (
+            <div key={i}>
+              {route.items ? (
+                <div className="py-2">
+                  <span className="px-3 text-xs font-semibold text-muted-foreground/70">{route.label}</span>
+                  <div className="mt-1 grid gap-1">
+                    {route.items.map((item) => (
+                      <SidebarLink key={item.href} {...item} indent />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <SidebarLink key={route.href} {...route} />
               )}
-              onClick={() => setIsOpen(false)}
-            >
-              <route.icon className="h-4 w-4" />
-              {route.label}
-            </Link>
+            </div>
           ))}
         </nav>
       </div>
@@ -160,7 +239,7 @@ export function Sidebar() {
       </div>
 
       {/* Espacio para compensar la barra superior en móvil */}
-      <div className="h-16 w-full md:hidden"></div>
+      <div className="h-16 w-full md:hidden" />
     </>
   )
 }

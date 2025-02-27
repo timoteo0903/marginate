@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { BarChart, Users, Package, DollarSign, CreditCard, Activity } from "lucide-react"
+import { useState, useEffect } from "react"
+import { BarChart, Users, Package, DollarSign, CreditCard, Activity, Building2, Target, FileText } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { StatCard } from "@/app/components/dashboard-stats"
 import { Button } from "@/app/components/ui/button"
@@ -9,6 +9,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 export default function Home() {
   const [selectedPeriod, setSelectedPeriod] = useState("Este mes")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  const [stats, setStats] = useState({
+    finanzas: {
+      ingresos: 0,
+      egresos: 0,
+      balance: 0,
+    },
+    inventario: {
+      totalProductos: 0,
+      valorInventario: 0,
+      productosStockBajo: 0,
+    },
+    crm: {
+      totalClientes: 0,
+      clientesActivos: 0,
+      oportunidadesAbiertas: 0,
+      valorOportunidades: 0,
+    },
+  })
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -39,10 +59,11 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Estadísticas Financieras */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Ingresos Totales"
-          value="$45,231.89"
+          value={`$${stats.finanzas.ingresos.toLocaleString("es-CL")}`}
           description="Ingresos acumulados en el período"
           icon={<DollarSign className="h-4 w-4 text-primary" />}
           trend={{
@@ -53,7 +74,7 @@ export default function Home() {
         />
         <StatCard
           title="Egresos Totales"
-          value="$12,234.45"
+          value={`$${stats.finanzas.egresos.toLocaleString("es-CL")}`}
           description="Gastos acumulados en el período"
           icon={<CreditCard className="h-4 w-4 text-primary" />}
           trend={{
@@ -63,25 +84,73 @@ export default function Home() {
           }}
         />
         <StatCard
-          title="Nuevos Clientes"
-          value="120"
-          description="Clientes adquiridos en el período"
-          icon={<Users className="h-4 w-4 text-primary" />}
+          title="Balance"
+          value={`$${stats.finanzas.balance.toLocaleString("es-CL")}`}
+          description="Balance del período"
+          icon={<BarChart className="h-4 w-4 text-primary" />}
           trend={{
-            value: "+12.0%",
+            value: "+15.6%",
             label: "vs período anterior",
             positive: true,
           }}
         />
         <StatCard
           title="Productos en Stock"
-          value="3,456"
+          value={stats.inventario.totalProductos.toString()}
           description="Unidades disponibles actualmente"
           icon={<Package className="h-4 w-4 text-primary" />}
           trend={{
             value: "-2.3%",
             label: "vs período anterior",
             positive: false,
+          }}
+        />
+      </div>
+
+      {/* Estadísticas CRM */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Total Clientes"
+          value={stats.crm.totalClientes.toString()}
+          description="Clientes registrados"
+          icon={<Building2 className="h-4 w-4 text-primary" />}
+          trend={{
+            value: "+12.5%",
+            label: "vs mes anterior",
+            positive: true,
+          }}
+        />
+        <StatCard
+          title="Clientes Activos"
+          value={stats.crm.clientesActivos.toString()}
+          description="Clientes con actividad reciente"
+          icon={<Users className="h-4 w-4 text-primary" />}
+          trend={{
+            value: "+5.2%",
+            label: "vs mes anterior",
+            positive: true,
+          }}
+        />
+        <StatCard
+          title="Oportunidades"
+          value={stats.crm.oportunidadesAbiertas.toString()}
+          description="Oportunidades abiertas"
+          icon={<Target className="h-4 w-4 text-primary" />}
+          trend={{
+            value: "+8.3%",
+            label: "vs mes anterior",
+            positive: true,
+          }}
+        />
+        <StatCard
+          title="Pipeline"
+          value={`$${stats.crm.valorOportunidades.toLocaleString("es-CL")}`}
+          description="Valor total de oportunidades"
+          icon={<FileText className="h-4 w-4 text-primary" />}
+          trend={{
+            value: "+15.2%",
+            label: "vs mes anterior",
+            positive: true,
           }}
         />
       </div>
@@ -267,4 +336,3 @@ export default function Home() {
     </div>
   )
 }
-
